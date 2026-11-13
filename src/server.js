@@ -1,83 +1,51 @@
 import express from 'express';
-import { pinoHttp } from 'pino-http';
+import pinoHttp from 'pino-http';
 import cors from 'cors';
 import { env } from './utils/env.js';
+import { errorHandler } from './middlewares/errorHandler.js';
+import { notFoundHandler } from './middlewares/notFoundHandler.js';
+import router from './routers/index.js';
+import cookieParser from 'cookie-parser';
 
-export function startServer() {
+const PORT = Number(env('PORT', '3000'));
+
+export const startServer = () => {
   const app = express();
-  app.use(
-    cors({
-      origin: 'http://127.0.0.1:5500',
-    }),
-  );
+
   app.use(
     pinoHttp({
+      redact: [
+        'req.headers.cookie',
+        'req.headers.authorization',
+        'res.headers["set-cookie"]',
+      ],
       transport: {
         target: 'pino-pretty',
       },
     }),
   );
 
-  const PORT = Number(env('PORT', '3000'));
+  app.use(
+    cors({
+      origin: 'http://127.0.0.1:5500',
+    }),
+  );
 
   app.use(express.json());
-
-  app.use((req, res, next) => {
-    console.log(req.method);
-    console.log(req.url);
-    next();
-  });
-
-  app.use('/admin', (req, res, next) => {
-    const adminVeri = req.headers['x-admin-key'];
-
-    if (adminVeri === '12345') {
-      next();
-    } else {
-      req.log.warn('Admin access denied');
-      res.status(401).json({
-        message: 'Unauthorized',
-      });
-    }
-  });
-
-  app.get('/admin', (req, res) => {
-    res.json({
-      message: 'Welcome admin',
-    });
-  });
-
-  app.get('/error', (req, res, next) => {
-    const error = new Error('Database connection failed');
-
-    next(error);
-  });
+  app.use(cookieParser());
 
   app.get('/', (req, res) => {
     res.json({
-      message: 'Express final started',
+      message: 'API is running',
     });
   });
 
-  app.post('/user', (req, res) => {
-    const dataUser = req.body;
+  app.use(router);
 
-    res.json(dataUser);
+  app.use(notFoundHandler);
+  app.use(errorHandler);
+
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
   });
-
-  app.use((req, res) => {
-    res.status(404).json({
-      message: 'Route not found',
-    });
-  });
-
-  app.use((err, req, res, next) => {
-    req.log.error(err, 'Unexpected server error');
-    res.status(500).json({
-      message: 'Something went wrong',
-      error: err.message,
-    });
-  });
-
-  app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
-}
+};
