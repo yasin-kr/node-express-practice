@@ -1,3 +1,4 @@
+// Öğrenci verisinin MongoDB şeması; students service bu model üzerinden sorgu ve kayıt yapar.
 import { model, Schema } from 'mongoose';
 
 const studentsSchema = new Schema(
@@ -28,9 +29,12 @@ const studentsSchema = new Schema(
       required: true,
       default: false,
     },
+    photo: { type: String },
+// Veliye referanstır; checkRoles sahipliği bununla sorgular. ref tek başına kullanıcı varlığını doğrulamaz.
     parentId: { type: Schema.Types.ObjectId, ref: "users"},
   },
   {
+// createdAt/updatedAt otomatik tutulur; versionKey: false ile __v alanı eklenmez.
     timestamps: true,
     versionKey: false,
   },

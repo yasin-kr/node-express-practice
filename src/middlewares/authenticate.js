@@ -1,3 +1,4 @@
+// Öğrenci rotalarından önce Bearer access tokenı, oturumu ve süresini kontrol eder.
 import createHttpError from "http-errors";
 import { SessionsCollection } from "../db/models/session.js";
 import { UsersCollection } from "../db/models/user.js";
@@ -18,6 +19,7 @@ export const authenticate = async (req,res,next) => {
     return;
   }
 
+// Access token JWT değildir; eşleşen token veritabanından bulunur.
   const session = await SessionsCollection.findOne({
     accessToken: token});
 
@@ -39,6 +41,7 @@ export const authenticate = async (req,res,next) => {
     return;
     }
 
+// Kullanıcı sonraki checkRoles middleware’ine req.user ile aktarılır; next() zinciri sürdürür.
     req.user=user;
 next();
 }

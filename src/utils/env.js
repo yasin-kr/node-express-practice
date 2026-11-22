@@ -1,3 +1,4 @@
+// dotenv .env dosyasını process.env içine yükler; env adla değer okur, yoksa varsayılanı döndürür veya hata atar.
 import dotenv from 'dotenv';
 
 dotenv.config();

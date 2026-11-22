@@ -1,3 +1,4 @@
+// Toplam kayıt, sayfa boyutu ve sayfa numarası alır; Math.ceil ile sayfa sayısını ve gezinme bayraklarını döndürür.
 export const calculatePaginationData = (count, perPage, page) => {
   const totalPages = Math.ceil(count / perPage);
 

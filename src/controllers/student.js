@@ -1,3 +1,4 @@
+// Öğrenci HTTP işlemleri: istek verilerini service’e geçirir, model sonucunu JSON yanıtına dönüştürür.
 import createHttpError from 'http-errors';
 import {
   getAllStudents,
@@ -9,7 +10,11 @@ import {
 import { parsePaginationParams } from '../utils/parsePaginationParams.js';
 import { parseSortParams } from '../utils/parseSortParams.js';
 import { parseFilterParams } from '../utils/parseFilterParams.js';
+import { saveFileToUploadDir } from '../utils/saveFileToUploadDir.js';
+import { env } from '../utils/env.js';
+import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
 
+// Query parametrelerini ayrıştırır; service’den liste + sayfalama verisi alır, hatayı next ile iletir.
 export const getStudentsController = async (req, res, next) => {
   const { page, perPage } = parsePaginationParams(req.query);
   const { sortBy, sortOrder } = parseSortParams(req.query);
@@ -34,6 +39,7 @@ export const getStudentsController = async (req, res, next) => {
   }
 };
 
+// URL’deki studentId ile tek kayıt ister; bulunamazsa 404 üretir.
 export const getStudentByIdController = async (req, res) => {
   const { studentId } = req.params;
   const student = await getStudentById(studentId);
@@ -49,8 +55,19 @@ export const getStudentByIdController = async (req, res) => {
   });
 };
 
+// Body ile öğrenci oluşturur; yeni kaydı 201 durumuyla döndürür.
 export const createStudentController = async (req, res) => {
-  const student = await createStudent(req.body);
+  const studentData = { ...req.body };
+
+  if (req.file) {
+    if (env('ENABLE_CLOUDINARY') === 'true') {
+      studentData.photo = await saveFileToCloudinary(req.file);
+    } else {
+      studentData.photo = await saveFileToUploadDir(req.file);
+    }
+  }
+
+  const student = await createStudent(studentData);
 
   return res.status(201).json({
     status: 201,
@@ -59,6 +76,7 @@ export const createStudentController = async (req, res) => {
   });
 };
 
+// ID ile siler; bulunamazsa 404, başarılıysa gövdesiz 204 döndürür.
 export const deleteStudentController = async (req, res, next) => {
   const { studentId } = req.params;
 
@@ -72,10 +90,20 @@ export const deleteStudentController = async (req, res, next) => {
   res.status(204).send();
 };
 
+// PUT: upsert seçeneği olmayan kaydı oluşturur; isNew sonucuna göre 201 veya 200 döndürür.
 export const upsertStudentController = async (req, res, next) => {
   const { studentId } = req.params;
+  const studentData = { ...req.body };
 
-  const result = await updateStudent(studentId, req.body, {
+  if (req.file) {
+    if (env('ENABLE_CLOUDINARY') === 'true') {
+      studentData.photo = await saveFileToCloudinary(req.file);
+    } else {
+      studentData.photo = await saveFileToUploadDir(req.file);
+    }
+  }
+
+  const result = await updateStudent(studentId, studentData, {
     upsert: true,
   });
 
@@ -93,10 +121,20 @@ export const upsertStudentController = async (req, res, next) => {
   });
 };
 
+// PATCH: yalnızca gönderilen alanları günceller; kayıt yoksa 404, varsa güncel öğrenci döner.
 export const patchStudentController = async (req, res, next) => {
   const { studentId } = req.params;
+  const updateData = { ...req.body };
 
-  const result = await updateStudent(studentId, req.body);
+   if (req.file) {
+    if(env("ENABLE_CLOUDINARY") === "true"){
+      updateData.photo = await saveFileToCloudinary(req.file);
+    }else{
+      updateData.photo = await saveFileToUploadDir(req.file);
+    }
+  }
+
+  const result = await updateStudent(studentId, updateData);
 
   if (!result) {
     next(createHttpError(404, 'Student not found!'));

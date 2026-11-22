@@ -1,3 +1,4 @@
+// Query’den page/perPage alır; pozitif güvenli tamsayı değilse 1/10 varsayılanlarıyla nesne döndürür.
 const parseNumber = (value, defaultValue) => {
   if (typeof value !== 'string') return defaultValue;
 

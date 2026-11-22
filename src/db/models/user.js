@@ -1,3 +1,4 @@
+// Kullanıcı modeli: kimlik bilgileri, parola hash’i ve varsayılan parent rolünü tanımlar.
 import { model, Schema } from 'mongoose';
 import { ROLES } from '../../constants/index.js';
 
@@ -29,6 +30,7 @@ const usersSchema = new Schema(
   },
 );
 
+// res.json kullanıcıyı serileştirirken hash’i yanıttan çıkarır; veritabanındaki parola alanı silinmez.
 usersSchema.methods.toJSON = function () {
   const obj = this.toObject();
 

@@ -1,0 +1,42 @@
+security: []
+tags:
+  - Auth
+summary: Complete Google sign-in
+operationId: loginWithGoogle
+description: >
+  Exchanges the short-lived authorization code from Google for an application
+  access token. Also sets the refreshToken and sessionId cookies.
+requestBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        type: object
+        required:
+          - code
+        properties:
+          code:
+            type: string
+            example: google-authorization-code
+responses:
+  '200':
+    description: Google sign-in completed successfully.
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: integer
+              example: 200
+            message:
+              type: string
+              example: Successfully logged in via Google OAuth!
+            data:
+              type: object
+              properties:
+                accessToken:
+                  type: string
+                  example: your-access-token
+  '400':
+    description: The required code field is missing or invalid. 

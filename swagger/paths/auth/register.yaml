@@ -1,0 +1,51 @@
+security: []
+tags:
+  - Auth
+summary: Register a user
+operationId: registerUser
+description: >
+  Creates a user account. The role is assigned by the server
+  and is not provided in the request.
+requestBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        type: object
+        required:
+          - name
+          - email
+          - password
+        properties:
+          name:
+            type: string
+            minLength: 3
+            maxLength: 30
+            example: Jane Doe
+          email:
+            type: string
+            format: email
+            example: jane@example.com
+          password:
+            type: string
+            format: password
+            example: StrongPassword123
+responses:
+  '201':
+    description: User registered successfully.
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: integer
+              example: 201
+            message:
+              type: string
+              example: Successfully registered a user!
+            data:
+              type: object
+              description: Registered user data without the password.
+  '400':
+    description: The request body is invalid.

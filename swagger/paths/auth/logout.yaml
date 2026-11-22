@@ -1,0 +1,18 @@
+security: []
+tags:
+  - Auth
+summary: Log out
+operationId: logoutUser
+description: >
+  Uses the sessionId cookie when present, clears the sessionId
+  and refreshToken cookies, and returns no response body.
+parameters:
+  - in: cookie
+    name: sessionId
+    required: false
+    schema:
+      type: string
+    description: Session identifier cookie.
+responses:
+  '204':
+    description: Logged out successfully. No response body is returned.

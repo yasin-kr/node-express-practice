@@ -1,7 +1,9 @@
+// Öğrenci veri katmanı: controller’dan gelen parametrelerle Mongoose sorguları yürütür.
 import { SORT_ORDER } from '../constants/index.js';
 import { StudentsCollection } from '../db/models/student.js';
 import { calculatePaginationData } from '../utils/calculatePaginationData.js';
 
+// Sayfalama/sıralama/filtre nesnesi alır; öğrenci listesi ve toplam sayfa bilgilerini döndürür.
 export const getAllStudents = async ({
   page,
   perPage,
@@ -12,6 +14,7 @@ export const getAllStudents = async ({
   const limit = perPage;
   const skip = (page - 1) * perPage;
 
+// Sorgu burada hazırlanır; where/gte/lte/equals koşulları ekler, exec veritabanında çalıştırır.
   const studentsQuery = StudentsCollection.find();
 
   if (filter.minAge !== undefined) {
@@ -34,6 +37,8 @@ export const getAllStudents = async ({
     studentsQuery.where('avgMark').lte(filter.maxAvgMark);
   }
 
+// Promise.all toplam sayıyı ve sayfa verisini birlikte bekler; merge aynı filtreleri sayım sorgusuna taşır.
+// İkincil _id sıralaması eşit alan değerlerinde düzeni belirler; skip/limit yalnızca istenen sayfayı getirir.
   const [studentsCount, students] = await Promise.all([
     StudentsCollection.find().merge(studentsQuery).countDocuments().exec(),
 
@@ -54,17 +59,20 @@ export const getAllStudents = async ({
   };
 };
 
+// ID alır; bulunan öğrenci belgesini veya null döndürür.
 export const getStudentById = async (studentId) => {
   const student = await StudentsCollection.findById(studentId);
 
   return student;
 };
 
+// Payload ile kayıt oluşturur, kaydedilen öğrenci belgesini döndürür.
 export const createStudent = async (payload) => {
   const student = await StudentsCollection.create(payload);
   return student;
 };
 
+// ID ile kaydı siler; silinen belgeyi veya bulunamazsa null döndürür.
 export const deleteStudent = async (studentId) => {
   const student = await StudentsCollection.findOneAndDelete({
     _id: studentId,
@@ -73,6 +81,8 @@ export const deleteStudent = async (studentId) => {
   return student;
 };
 
+// ID, alanlar ve isteğe bağlı seçenekler alır; güncel öğrenci + isNew veya null döndürür.
+// returnDocument: after güncel belgeyi, metadata ise upsert ile yeni kayıt oluşup oluşmadığını verir.
 export const updateStudent = async (studentId, payload, options = {}) => {
   const rawResult = await StudentsCollection.findOneAndUpdate(
     { _id: studentId },

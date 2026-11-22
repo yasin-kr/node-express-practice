@@ -1,0 +1,50 @@
+type: object
+required:
+  - _id
+  - name
+  - age
+  - gender
+  - avgMark
+  - onDuty
+properties:
+  _id:
+    description: Student's ID
+    type: string
+    example: '65ca67e7ae7f10c88b598375'
+  name:
+    description: Student's name
+    type: string
+    example: John Doe
+  age:
+    description: Student's age
+    type: number
+    example: 12
+  gender:
+    description: Student's gender
+    type: string
+    enum:
+      - male
+      - female
+      - other
+  avgMark:
+    description: Student's average mark
+    type: number
+    example: 9.7
+  onDuty:
+    description: Whether the student is on duty
+    type: boolean
+    example: false
+  parentId:
+    description: Student's parent's ID
+    type: string
+    example: '65e4decdd286b30065d54af9'
+  photo:
+    description: Link to the student's photo
+    type: string
+    example: https://example.com/student.png
+  createdAt:
+   type: string
+   format: date-time
+  updatedAt:
+   type: string
+   format: date-time

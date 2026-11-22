@@ -1,0 +1,23 @@
+tags:
+  - Students
+summary: Delete a student
+operationId: deleteStudent
+description: Requires a teacher account.
+parameters:
+  - in: path
+    name: studentId
+    required: true
+    schema:
+      type: string
+    description: The ID of the student to delete.
+security:
+  - bearerAuth: []
+responses:
+  '204':
+    description: Student deleted successfully. No response body is returned.
+  '401':
+    $ref: ../../../components/responses/401.yaml
+  '403':
+    description: Only teachers can delete students.
+  '404':
+    description: Student not found.

@@ -1,3 +1,4 @@
+// studentId biçimini Mongoose ile kontrol eder; geçersizse 404, geçerliyse next(). Kayıt varlığını sorgulamaz.
 import createHttpError from 'http-errors';
 import { isValidObjectId } from 'mongoose';
 

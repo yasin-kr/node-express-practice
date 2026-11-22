@@ -1,0 +1,76 @@
+tags:
+  - Students
+summary: Partially update a student
+operationId: patchStudent
+description: >
+  Updates only the fields provided in the request.
+  Teachers can update any student. Parents can update only their own student.
+parameters:
+  - in: path
+    name: studentId
+    required: true
+    schema:
+      type: string
+    description: The ID of the student to update.
+security:
+  - bearerAuth: []
+requestBody:
+  required: true
+  content:
+    multipart/form-data:
+      schema:
+        type: object
+        properties:
+          name:
+            type: string
+            minLength: 3
+            maxLength: 30
+            example: John Doe
+          age:
+            type: integer
+            minimum: 6
+            maximum: 16
+            example: 12
+          gender:
+            type: string
+            enum:
+              - male
+              - female
+              - other
+            example: male
+          avgMark:
+            type: number
+            minimum: 2
+            maximum: 12
+            example: 9.7
+          onDuty:
+            type: boolean
+            example: false
+          photo:
+            type: string
+            format: binary
+            description: Optional student photo.
+responses:
+  '200':
+    description: Student updated.
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: integer
+              example: 200
+            message:
+              type: string
+              example: Successfully patched a student!
+            data:
+              $ref: ../../../components/schemas/student.yaml
+  '400':
+    description: Invalid student ID or invalid request data.
+  '401':
+    $ref: ../../../components/responses/401.yaml
+  '403':
+    description: The user is not allowed to update this student.
+  '404':
+    description: Student not found.

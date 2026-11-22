@@ -1,0 +1,50 @@
+security: []
+tags:
+  - Auth
+summary: Log in with email and password
+operationId: loginUser
+description: >
+  Logs in a user, sets the refreshToken and sessionId cookies,
+  and returns an access token.
+requestBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        type: object
+        required:
+          - email
+          - password
+        properties:
+          email:
+            type: string
+            format: email
+            example: user@example.com
+          password:
+            type: string
+            format: password
+            example: StrongPassword123
+responses:
+  '200':
+    description: Login successful. Session cookies are also set.
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: integer
+              example: 200
+            message:
+              type: string
+              example: Successfully logged in a user!
+            data:
+              type: object
+              properties:
+                accessToken:
+                  type: string
+                  example: your-access-token
+  '400':
+    description: The request body is invalid.
+  '401':
+    description: Email or password is incorrect.

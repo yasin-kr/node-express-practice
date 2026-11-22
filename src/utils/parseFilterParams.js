@@ -1,3 +1,4 @@
+// Query filtrelerini nesneye dönüştürür; geçersiz sayılar/cinsiyet undefined olur ve service filtreye eklemez.
 const parseNumber = (value) => {
   if (typeof value !== 'string') return;
 

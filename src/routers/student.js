@@ -1,3 +1,4 @@
+// Öğrenci uç noktaları: authenticate → checkRoles → varsa isValidId → varsa validateBody → controller.
 // Express'ten Router oluşturma aracını alıyoruz.
 import { Router } from 'express';
 
@@ -32,6 +33,8 @@ import { authenticate } from '../middlewares/authenticate.js';
 import { checkRoles } from '../middlewares/checkRoles.js';
 import { ROLES } from '../constants/index.js';
 
+import { upload } from '../middlewares/multer.js';
+
 
 // İstekleri bu dosyada toplayacağımız router'ı oluşturuyoruz.
 const router = Router();
@@ -44,11 +47,14 @@ router.use(authenticate);
 router.get("/", checkRoles(ROLES.TEACHER), ctrlWrapper(getStudentsController))
 
 // GET /students/:studentId
+// Rol kontrolü ID kontrolünden önce gelir; veli dalında veritabanı sorgusu isValidId'den önce çalışabilir.
 router.get('/:studentId', checkRoles(ROLES.TEACHER, ROLES.PARENT),isValidId, ctrlWrapper(getStudentByIdController));
 
 // POST /students
 router.post(
-  '/',checkRoles(ROLES.TEACHER),
+  '/',
+  checkRoles(ROLES.TEACHER),
+  upload.single('photo'),
   validateBody(createStudentSchema),
   ctrlWrapper(createStudentController),
 );
@@ -61,6 +67,7 @@ router.put(
   '/:studentId',
   checkRoles(ROLES.TEACHER),
   isValidId,
+  upload.single('photo'),
   validateBody(createStudentSchema),
   ctrlWrapper(upsertStudentController),
 );
@@ -68,11 +75,13 @@ router.put(
 // PATCH /students/:studentId
 router.patch(
   '/:studentId',
-  checkRoles(ROLES.TEACHER, ROLES.PARENT),
   isValidId,
+  checkRoles(ROLES.TEACHER, ROLES.PARENT),
+  upload.single('photo'),
   validateBody(updateStudentSchema),
   ctrlWrapper(patchStudentController),
 );
+
 
 // Bu router'ı ana router dosyasına gönderiyoruz.
 export default router;

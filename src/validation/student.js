@@ -1,3 +1,4 @@
+// Öğrenci body şemaları: POST/PUT zorunlu alanları, PATCH isteğe bağlı değişiklikleri doğrular.
 import Joi from 'joi';
 
 export const createStudentSchema = Joi.object({
@@ -14,6 +15,7 @@ export const createStudentSchema = Joi.object({
   parentId: Joi.string().required(),
 });
 
+// PATCH şemasında parentId yoktur; bu rota veli bağını değiştirecek alan kabul etmez.
 export const updateStudentSchema = Joi.object({
   name: Joi.string().min(3).max(30),
   age: Joi.number().integer().min(6).max(16),

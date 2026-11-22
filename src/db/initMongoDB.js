@@ -1,3 +1,4 @@
+// Ortam değişkenlerinden bağlantı adresini kurar; initMongoDB bağlantıyı bekler, hatayı bootstrap’a iletir.
 import mongoose from 'mongoose';
 import { env } from '../utils/env.js';
 

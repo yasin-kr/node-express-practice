@@ -1,5 +1,8 @@
+// Oturum modeli: kullanıcı bağlantısını, rastgele tokenları ve son geçerlilik tarihlerini saklar.
 import { model, Schema } from 'mongoose';
 
+// Tokenlar bu şemada açık metin saklanır; süre kontrolünü authenticate ve auth service yapar.
+// TTL indeksi yoktur; tarih alanı tek başına kaydı otomatik silmez.
 const sessionsSchema = new Schema(
   {
     userId: {

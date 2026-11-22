@@ -1,3 +1,4 @@
+// Query sıralamasını izin verilen alanlarla sınırlar; bilinmeyen alan/yön için _id/asc döndürür.
 import { SORT_ORDER } from '../constants/index.js';
 
 const parseSortOrder = (sortOrder) => {
