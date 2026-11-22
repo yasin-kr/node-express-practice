@@ -9,7 +9,7 @@ tags:
   - name: Auth
     description: Authentication operations.
 servers:
-  - url: http://localhost:3000
+  - url: https://node-express-practice-ef0a.onrender.com
 
 paths: 
   /students/{studentId}:
